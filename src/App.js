@@ -1,87 +1,47 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import api from './services/api';
 
 import './global.css';
 import './App.css';
 import './Sidebar.css';
+import './Main.css';
+
+import DevItem from './components/DevItem';
+import DevForm from './components/DevForm';
 
 function App() {
+  const [devs, setDevs] = useState([]);
+
+
+  useEffect(() => {
+    async function loadDevs() {
+      const response = await api.get('/devs');
+
+      setDevs(response.data);
+    }
+    loadDevs();
+  }, []);
+
+
+
+  async function handleSubmit(data) {
+    const response = await api.post('/devs', data);
+
+    setDevs([...devs, response.data]);
+  }
+
   return (
     <div id="app">
       <aside>
         <strong>Cadastrar</strong>
-        <form>
-          <div class="input-block">
-            <label htmlFor="github_username">Usuário do Github</label>
-            <input name="github_username" id="username_github" required />
-          </div>
-
-          <div class="input-block">
-            <label htmlFor="techs">Tecnologias</label>
-            <input name="techs" id="techs" required />
-          </div>
-
-          <div className="input-group">
-            <div class="input-block">
-              <label htmlFor="latitude">Latitude</label>
-              <input name="latitude" id="latitude" required />
-            </div>
-
-            <div class="input-block">
-              <label htmlFor="longitude">Longitude</label>
-              <input name="longitude" id="longitude" required />
-            </div>
-          </div>
-
-          <button type="submit">Salvar</button>
-        </form>
+        <DevForm onSubmit={handleSubmit} />
       </aside>
 
       <main>
         <ul>
-          <li className="dev-item">
-            <header>
-              <img src="https://avatars0.githubusercontent.com/u/32100834?s=220&v=4" alt="Thiago Marques" />
-              <div className="user-info">
-                <strong>Thiago Marques</strong>
-                <span>ReactJs, React Native, NodeJS</span>
-              </div>
-            </header>
-            <p>Entusiasta de programação e tecnologia em geral.</p>
-            <a href="https://github.com/tmx01">Acessar perfil no github</a>
-          </li>
-          <li className="dev-item">
-            <header>
-              <img src="https://avatars0.githubusercontent.com/u/32100834?s=220&v=4" alt="Thiago Marques" />
-              <div className="user-info">
-                <strong>Thiago Marques</strong>
-                <span>ReactJs, React Native, NodeJS</span>
-              </div>
-            </header>
-            <p>Entusiasta de programação e tecnologia em geral.</p>
-            <a href="https://github.com/tmx01">Acessar perfil no github</a>
-          </li>
-          <li className="dev-item">
-            <header>
-              <img src="https://avatars0.githubusercontent.com/u/32100834?s=220&v=4" alt="Thiago Marques" />
-              <div className="user-info">
-                <strong>Thiago Marques</strong>
-                <span>ReactJs, React Native, NodeJS</span>
-              </div>
-            </header>
-            <p>Entusiasta de programação e tecnologia em geral.</p>
-            <a href="https://github.com/tmx01">Acessar perfil no github</a>
-          </li>
-          <li className="dev-item">
-            <header>
-              <img src="https://avatars0.githubusercontent.com/u/32100834?s=220&v=4" alt="Thiago Marques" />
-              <div className="user-info">
-                <strong>Thiago Marques</strong>
-                <span>ReactJs, React Native, NodeJS</span>
-              </div>
-            </header>
-            <p>Entusiasta de programação e tecnologia em geral.</p>
-            <a href="https://github.com/tmx01">Acessar perfil no github</a>
-          </li>
+          {devs.map(dev => (
+            <DevItem key={dev._id} dev={dev} />
+          ))}
         </ul>
       </main>
     </div>
